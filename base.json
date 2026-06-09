@@ -1,0 +1,14 @@
+{
+  "id": "base",
+  "label": "Default composition",
+  "apps": {
+    "page.landing": "github:immediately-run/example-blog@main",
+    "panel.spaces": "github:immediately-run/space-manager@main",
+    "panel.files": "github:immediately-run/file-explorer@main",
+    "modal.contribute": "github:immediately-run/contribute@main",
+    "panel.agent": "github:immediately-run/agent-demo@main",
+    "widget.theme": "github:immediately-run/theme-toggle@main",
+    "task.pick-color": "github:immediately-run/color-picker@main",
+    "task.edit-file": "github:immediately-run/edit-file@main"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "releases": {
+    "base": {
+      "label": "Default composition",
+      "url": "base.lock.json",
+      "sha256": "9ad9edc7b81857b5a282351c99b1c40dd158ddc39b04ba0d67fb2dd824559b08"
+    }
+  }
+}
