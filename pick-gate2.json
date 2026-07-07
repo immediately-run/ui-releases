@@ -1,0 +1,8 @@
+{
+  "id": "pick-gate2",
+  "label": "Pick-color variant (Gate-2)",
+  "extends": "base",
+  "apps": {
+    "task.pick-color": "github:immediately-run/color-picker@gate2-variant"
+  }
+}

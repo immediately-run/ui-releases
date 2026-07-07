@@ -5,6 +5,11 @@
       "label": "Default composition",
       "url": "base.lock.json",
       "sha256": "9ad9edc7b81857b5a282351c99b1c40dd158ddc39b04ba0d67fb2dd824559b08"
+    },
+    "pick-gate2": {
+      "label": "Pick-color variant (Gate-2)",
+      "url": "pick-gate2.lock.json",
+      "sha256": "5cd5402794fc9da6b96b886945c6f498be1c107d6053fe2f60fa05ba054fa4d4"
     }
   }
 }

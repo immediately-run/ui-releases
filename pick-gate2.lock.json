@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "pick-gate2",
+  "label": "Pick-color variant (Gate-2)",
+  "apps": {
+    "modal.contribute": {
+      "repo": "github:immediately-run/contribute",
+      "ref": "main",
+      "commit": "1ac778865ad1419a73718ee27eadce65e5c73389"
+    },
+    "page.landing": {
+      "repo": "github:immediately-run/example-blog",
+      "ref": "main",
+      "commit": "7ccac680001974cec7e2e3f3e076f3869db4ccec"
+    },
+    "panel.agent": {
+      "repo": "github:immediately-run/agent-demo",
+      "ref": "main",
+      "commit": "a5ccf1047e25c7e2304eb488dd27e79bd1d3e179"
+    },
+    "panel.files": {
+      "repo": "github:immediately-run/file-explorer",
+      "ref": "main",
+      "commit": "4f1f0773414e8385bf9e07a83d3404175e0d20a0"
+    },
+    "panel.spaces": {
+      "repo": "github:immediately-run/space-manager",
+      "ref": "main",
+      "commit": "8300cd837b2e69d87e1d5646f68e4025b48db4fb"
+    },
+    "task.edit-file": {
+      "repo": "github:immediately-run/edit-file",
+      "ref": "main",
+      "commit": "6985e569b1b9d95f23382df7b75c987c5ef45470"
+    },
+    "task.pick-color": {
+      "repo": "github:immediately-run/color-picker",
+      "ref": "gate2-variant",
+      "commit": "7cdfd2968ddbac8daa2029d797b6b1af24cc2c93"
+    },
+    "widget.theme": {
+      "repo": "github:immediately-run/theme-toggle",
+      "ref": "main",
+      "commit": "ad038d56a96926ef09001d06a5d7c049e3766ed6"
+    }
+  }
+}
