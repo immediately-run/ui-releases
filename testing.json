@@ -1,0 +1,6 @@
+{
+  "id": "testing",
+  "label": "Latest of origin/main (channel template)",
+  "extends": "base",
+  "apps": {}
+}

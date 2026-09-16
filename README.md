@@ -55,3 +55,32 @@ to Pages on push.
 **Immutable by name.** Re-pinning an existing name to *different* content is
 refused — a published name is frozen. Ship a new composition under a new name
 (`monaco-2026-07`); to correct a mistake, pass `--republish`.
+
+## The defaults-derived base map (2026-09-16)
+
+`base.json` + `defaults-map.json` are **derived mechanically** from site-main's
+`BUILD_DEFAULTS` (`npm run export:release-base` in the site-main checkout — the
+registry repo never reads the private host source). Every build-default region
+appears; an omitted region would silently re-couple to the moving `@main`
+(`UI_RELEASES_SPEC` §6.3 fallback), which is the opposite of a collection.
+`pin-release --check` fails at publish naming any region the base lock omits
+relative to `defaults-map.json` — re-run the export after every site-main
+registry change, commit both files, and republish `base`
+(`--only base --republish`, deliberate).
+
+## The `testing` channel (2026-09-16)
+
+`testing.json` is the channel *template*: `extends base`, no deltas — the base
+authoring map at `@main`, i.e. **the latest of origin/main**. The
+[`testing.yml`](.github/workflows/testing.yml) workflow (hourly + dispatch)
+resolves it into a **new dated immutable lock** (`testing-YYYY-MM-DD-<sha8>`),
+repoints `channels.testing` in `index.json` (the only mutable write in this
+registry), bakes the `zips/<ns>/<repo>/<sha>.zip` artifacts (§3.4 — the app
+repos' own Pages evict older shas), and commits to main; the push triggers
+`publish.yml`, which validates and serves Pages. A production deployment may
+never name a channel — it pins a concrete `name`+`sha256`; the `testing`
+channel is for dev/preview deployments and user selection.
+
+Historical locks (dated targets whose authoring is gone) are part of the
+committed registry: `pin-release` keeps them in the index verbatim, and
+`--check` fails if one is dropped.

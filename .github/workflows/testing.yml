@@ -1,0 +1,82 @@
+# Publishes the `testing` CHANNEL (UI_RELEASES_SPEC §4.4 — the moving pointer
+# to "latest of origin/main").
+#
+# Every run resolves the testing template (testing.json — the base authoring
+# map at @main) into a NEW dated immutable lock (`testing-YYYY-MM-DD-<sha8>`,
+# deterministic: an unchanged composition + day reuses the existing lock),
+# repoints `channels.testing` in index.json (the ONLY mutable write), bakes the
+# §3.4 registry zips for every pin the index carries (resident zips reused),
+# and commits to main. The commit's push triggers publish.yml, which validates
+# the registry (`pin-release --check`, networkless) and serves GitHub Pages.
+#
+# `--only testing`: this run can NEVER republish base — every other lock
+# (base, pick-gate2, older dated targets) is history, pins frozen (§3.3).
+#
+# Committing to main needs a token the R-TA-1 review ruleset accepts — the
+# org's deploy GitHub App (the same mint cache.yml uses for Pages enablement).
+# The mint is guarded: without the org secrets the run falls back to
+# github.token and the push fails LOUDLY on the ruleset — that settings leg
+# (App added to the ruleset bypass list) is R3-639's, deliberately not hidden
+# here.
+
+name: Publish the testing channel
+
+on:
+  schedule:
+    # Hourly at :23. The channel's freshness bound is this cadence plus the
+    # gh-pages CDN TTL (~10 min); a no-op run (unchanged composition, same day)
+    # resolves to the existing lock and exits without committing.
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: testing-channel
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Third-party actions pinned by commit SHA, and the CLI by an exact
+      # version — this workflow holds contents:write, so a floating tag would
+      # let an upstream compromise repoint the channel (§7 R5). Bump
+      # deliberately, in lockstep with publish.yml's --check pin.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          # A clean main is the base the dated lock + channel commit land on.
+          ref: main
+
+      - name: Mint the deploy App token (ruleset-accepted push)
+        id: pages-token
+        uses: actions/create-github-app-token@0a9acaec04ea16d1b4cedc0f29bd857ccf49e9cf # v2
+        with:
+          app-id: ${{ secrets.DEPLOY_APP_ID }}
+          private-key: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}
+        continue-on-error: ${{ secrets.DEPLOY_APP_ID == '' }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Resolve the testing channel's fresh target + bake its zips
+        # --dated publishes under the dated immutable name; --channel
+        # testing=@dated repoints the channel at it (the only mutable write);
+        # the bake is ON (the runner carries git+zip; resident zips are reused).
+        run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
+
+      - name: Commit the dated lock + channel repoint (skip a no-op run)
+        run: |
+          git config user.name "immediately-run-worker"
+          git config user.email "immediately-run-worker@users.noreply.github.com"
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "testing channel: no change — the resolved composition already has today's lock."
+            exit 0
+          fi
+          git add -A
+          git commit -m "testing channel: repoint to the resolved latest of origin/main (workflow run ${{ github.run_id }})"
+          git push
+        env:
+          GH_TOKEN: ${{ steps.pages-token.outputs.token || github.token }}
