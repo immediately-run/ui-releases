@@ -48,10 +48,16 @@ jobs:
         with:
           # A clean main is the base the dated lock + channel commit land on.
           ref: main
+          # Do NOT persist github.token credentials — the push below
+          # authenticates ONLY with the minted App token (the ruleset rejects
+          # github.token pushes; a persisted helper would silently race it).
+          persist-credentials: false
 
+      # The org's canonical pin for this action (the sibling cache.yml files —
+      # file-explorer, grove, … — carry the same SHA+tag), verified to exist.
       - name: Mint the deploy App token (ruleset-accepted push)
-        id: pages-token
-        uses: actions/create-github-app-token@0a9acaec04ea16d1b4cedc0f29bd857ccf49e9cf # v2
+        id: app-token
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         with:
           app-id: ${{ secrets.DEPLOY_APP_ID }}
           private-key: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}
@@ -68,6 +74,12 @@ jobs:
         run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
 
       - name: Commit the dated lock + channel repoint (skip a no-op run)
+        env:
+          # The MINTED token authenticates the push itself — checkout below ran
+          # with persist-credentials: false, so git has no other credentials;
+          # the ruleset rejects a plain github.token push, and the mint is the
+          # App R3-639 adds to the bypass list.
+          APP_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
         run: |
           git config user.name "immediately-run-worker"
           git config user.email "immediately-run-worker@users.noreply.github.com"
@@ -77,6 +89,4 @@ jobs:
           fi
           git add -A
           git commit -m "testing channel: repoint to the resolved latest of origin/main (workflow run ${{ github.run_id }})"
-          git push
-        env:
-          GH_TOKEN: ${{ steps.pages-token.outputs.token || github.token }}
+          git -c http.https://github.com/.extraheader="Authorization: Bearer $APP_TOKEN" push origin main
