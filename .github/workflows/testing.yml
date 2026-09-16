@@ -75,8 +75,8 @@ jobs:
 
       - name: Commit the dated lock + channel repoint (skip a no-op run)
         env:
-          # The MINTED token authenticates the push itself — checkout below ran
-          # with persist-credentials: false, so git has no other credentials;
+          # The MINTED token authenticates the push itself — the checkout above
+          # ran with persist-credentials: false, so git has no other credentials;
           # the ruleset rejects a plain github.token push, and the mint is the
           # App R3-639 adds to the bypass list.
           APP_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
@@ -89,4 +89,8 @@ jobs:
           fi
           git add -A
           git commit -m "testing channel: repoint to the resolved latest of origin/main (workflow run ${{ github.run_id }})"
-          git -c http.https://github.com/.extraheader="Authorization: Bearer $APP_TOKEN" push origin main
+          # Git-over-HTTPS accepts the App token ONLY as Basic x-access-token
+          # (a Bearer extraheader 401s at the git endpoints — probed live in
+          # review round 2). This is the same form actions/checkout itself
+          # writes for App tokens.
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$APP_TOKEN" | base64 -w0)" push origin main
