@@ -1,0 +1,153 @@
+# Publishes the `testing` CHANNEL (UI_RELEASES_SPEC §4.4 — the moving pointer
+# to "latest of origin/main").
+#
+# Every run resolves the testing template (testing.json — the base authoring
+# map at @main) into a NEW dated immutable lock (`testing-YYYY-MM-DD-<sha8>`,
+# deterministic: an unchanged composition + day reuses the existing lock),
+# repoints `channels.testing` in index.json (the ONLY mutable write), bakes the
+# §3.4 registry zips for every pin the index carries (resident zips reused),
+# and commits to main. The commit's push triggers publish.yml, which validates
+# the registry (`pin-release --check`, networkless) and serves GitHub Pages.
+#
+# `--only testing`: this run can NEVER republish base — every other lock
+# (base, pick-gate2, older dated targets) is history, pins frozen (§3.3).
+#
+# Committing to main needs a token the R-TA-1 review ruleset accepts — the
+# org's deploy GitHub App (the same mint cache.yml uses for Pages enablement).
+# The mint is guarded: without the org secrets the run falls back to
+# github.token and the push fails LOUDLY on the ruleset — that settings leg
+# (App added to the ruleset bypass list) is R3-639's, deliberately not hidden
+# here.
+
+name: Publish the testing channel
+
+on:
+  schedule:
+    # Hourly at :23. The channel's freshness bound is this cadence plus the
+    # gh-pages CDN TTL (~10 min); a no-op run (unchanged composition, same day)
+    # resolves to the existing lock and exits without committing.
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: testing-channel
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Third-party actions pinned by commit SHA, and the CLI by an exact
+      # version — this workflow holds contents:write, so a floating tag would
+      # let an upstream compromise repoint the channel (§7 R5). Bump
+      # deliberately, in lockstep with publish.yml's --check pin.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          # A clean main is the base the dated lock + channel commit land on.
+          ref: main
+          # Do NOT persist github.token credentials — the push below
+          # authenticates ONLY with the minted App token (the ruleset rejects
+          # github.token pushes; a persisted helper would silently race it).
+          persist-credentials: false
+
+      # The org's canonical pin for this action (the sibling cache.yml files —
+      # file-explorer, grove, … — carry the same SHA+tag), verified to exist.
+      - name: Mint the deploy App token (ruleset-accepted push)
+        id: app-token
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ secrets.DEPLOY_APP_ID }}
+          private-key: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}
+        continue-on-error: ${{ secrets.DEPLOY_APP_ID == '' }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Resolve the testing channel's fresh target + bake its zips
+        # --dated publishes under the dated immutable name; --channel
+        # testing=@dated repoints the channel at it (the only mutable write);
+        # the bake is ON (the runner carries git+zip; resident zips are reused).
+        run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
+
+      # ── The zips/ store has no automatic eviction, so it gets a tripwire ──
+      #
+      # `pin-release` keeps every historical lock in the index verbatim and
+      # `--check` FAILS if one is dropped (README, "Historical locks"), so this
+      # store is append-only by design: an hourly dated channel adds a lock
+      # whenever the composition changes, and nothing here ever removes one.
+      # `publish.yml` copies the whole tree into `_site`, and GitHub Pages
+      # refuses a published site over 1 GB — at which point `index.json` itself
+      # stops serving and every host boot falls to the §6.3 built-in fallback,
+      # which is the failure this registry exists to remove.
+      #
+      # Measured 2026-09-17: a full bake is 32 zips / ~21 MB (~660 KiB mean).
+      # Resident zips are reused, so a no-op run adds nothing.
+      #
+      # This step does NOT prune — pruning a lock is a judgement about what is
+      # still deployable, and a wrong one is unrecoverable from here. It fails
+      # the run while there is still an order of magnitude of headroom, so the
+      # operator prunes deliberately. See README "Retention" for the procedure.
+      - name: Fail before the zips store can threaten the Pages ceiling
+        run: |
+          set -euo pipefail
+          budget_mib=512   # hard stop: half of Pages' 1 GB refusal
+          warn_mib=256     # half the budget — visible long before the stop
+          # `du ... | cut || echo 0` does NOT work here: the pipeline's status is
+          # cut's, so a missing zips/ yields an EMPTY string, and `[ "" -ge N ]`
+          # is a syntax error that fails the step under `set -e`. zips/ does not
+          # exist until the first bake commits, i.e. on every run until then.
+          if [ -d zips ]; then
+            size_mib=$(du -sm zips | cut -f1)
+          else
+            size_mib=0
+          fi
+          echo "zips store: ${size_mib} MiB (warn ${warn_mib}, fail ${budget_mib}; Pages refuses 1024)"
+          if [ "$size_mib" -ge "$budget_mib" ]; then
+            echo "::error::zips/ is ${size_mib} MiB, at or over the ${budget_mib} MiB budget. \
+          Refusing to commit — a published site over 1 GB stops serving index.json entirely. \
+          Prune retired dated targets per README 'Retention' (index entry + lock + authoring, \
+          all three: dropping only the index entry fails pin-release --check), then re-run."
+            exit 1
+          fi
+          if [ "$size_mib" -ge "$warn_mib" ]; then
+            echo "::warning::zips/ is ${size_mib} MiB, past half the ${budget_mib} MiB budget. \
+          Prune retired dated targets per README 'Retention' before this reaches the stop."
+          fi
+
+      - name: Commit the dated lock + channel repoint (skip a no-op run)
+        env:
+          # The MINTED token authenticates the push itself — the checkout above
+          # ran with persist-credentials: false, so git has no other credentials;
+          # the ruleset rejects a plain github.token push, and the mint is the
+          # App R3-639 adds to the bypass list.
+          APP_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
+        run: |
+          git config user.name "immediately-run-worker"
+          git config user.email "immediately-run-worker@users.noreply.github.com"
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "testing channel: no change — the resolved composition already has today's lock."
+            exit 0
+          fi
+          git add -A
+          git commit -m "testing channel: repoint to the resolved latest of origin/main (workflow run ${{ github.run_id }})"
+          # Git-over-HTTPS accepts the App token ONLY as Basic x-access-token
+          # (a Bearer extraheader 401s at the git endpoints — probed live in
+          # review round 2). This is the same form actions/checkout itself
+          # writes for App tokens.
+          # A push refused by the ruleset is the EXPECTED failure until R3-639
+          # adds this App to the bypass list, and a raw git error does not say
+          # so. Name it, then fail — never swallow it: the commit is made and
+          # unpushed either way, and a green run would claim a repoint that
+          # never reached the registry.
+          if ! git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$APP_TOKEN" | base64 -w0)" push origin main; then
+            echo "::error::push to main refused. If this is the ruleset (protected-branch) \
+          rejection, it is R3-639's owed prerequisite: the deploy App that minted APP_TOKEN \
+          must be on the branch ruleset's bypass list. That needs repo admin and cannot be \
+          done from this workflow. The dated lock is committed locally but NOT published; \
+          re-run after the bypass is granted."
+            exit 1
+          fi

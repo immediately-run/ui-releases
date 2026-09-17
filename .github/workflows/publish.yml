@@ -44,12 +44,23 @@ jobs:
       # Verify the committed locks are internally consistent with index.json
       # (their sha-256 digests) before serving them. No network, no writes.
       - name: Validate release locks
-        run: npx -y @immediately-run/cli@0.3.0 pin-release --check --dir .
+        # 0.9.0: the --check gained the §4.4 channel-map validation, the
+        # historical-lock (authoring-less) index comparison, and the §3.1
+        # coverage assertion against the committed defaults-map.json — the
+        # 0.3.0 check FAILS on an index that carries any of those. Bump in
+        # lockstep with testing.yml's publish pin.
+        run: npx -y @immediately-run/cli@0.9.0 pin-release --check --dir .
 
       - name: Assemble Pages artifact
         run: |
           mkdir -p _site
           cp index.json *.lock.json _site/
+          # §3.4: the registry-hosted zips are PART of the served registry — a
+          # release-pinned host probes
+          # https://…/ui-releases/zips/<ns>/<repo>/<sha>.zip as its second
+          # source. Guarded: no bake has landed yet (the first testing run
+          # produces them) ⇒ nothing to copy.
+          if [ -d zips ]; then cp -r zips _site/; fi
           cat > _site/index.html <<'HTML'
           <!doctype html><meta charset="utf-8">
           <title>immediately.run UI release registry</title>

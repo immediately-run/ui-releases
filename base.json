@@ -1,14 +1,29 @@
 {
   "id": "base",
-  "label": "Default composition",
+  "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-16)",
   "apps": {
     "page.landing": "github:immediately-run/example-blog@main",
     "panel.spaces": "github:immediately-run/space-manager@main",
+    "page.home": "github:immediately-run/home@main",
+    "page.spaces": "github:immediately-run/space-manager@main",
     "panel.files": "github:immediately-run/file-explorer@main",
+    "page.commander": "github:immediately-run/file-explorer@main",
+    "panel.editor": "github:immediately-run/editor@main",
     "modal.contribute": "github:immediately-run/contribute@main",
+    "panel.contribute": "github:immediately-run/contribute-panel@main",
+    "mainpane.contribute-diff": "github:immediately-run/contribute-panel@main",
+    "panel.tools": "github:immediately-run/devtools@main",
+    "mainpane.tools": "github:immediately-run/devtools@main",
     "panel.agent": "github:immediately-run/agent-demo@main",
     "widget.theme": "github:immediately-run/theme-toggle@main",
     "task.pick-color": "github:immediately-run/color-picker@main",
-    "task.edit-file": "github:immediately-run/edit-file@main"
+    "task.edit-file": "github:immediately-run/edit-file@main",
+    "task.pick-file": "github:immediately-run/file-selector@main",
+    "task.open-bundle": "github:immediately-run/bundle-picker@main",
+    "task.open-project": "github:immediately-run/whiteboard@main",
+    "task.m2-probe": "github:immediately-run/greeting-lib@m2-subapp",
+    "task.open-workbook": "github:immediately-run/reckoner@main",
+    "task.open-wiki": "github:immediately-run/grove@main",
+    "stage.conversation": "github:immediately-run/agent-demo@main"
   }
 }
