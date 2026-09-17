@@ -84,3 +84,44 @@ channel is for dev/preview deployments and user selection.
 Historical locks (dated targets whose authoring is gone) are part of the
 committed registry: `pin-release` keeps them in the index verbatim, and
 `--check` fails if one is dropped.
+
+### Retention — the store is append-only, and its ceiling is stated
+
+**Nothing here evicts anything automatically, by design.** The sentence above is
+why: `pin-release` keeps every historical lock verbatim and `--check` fails if
+one is dropped, so an hourly dated channel adds a lock whenever the composition
+changes and nothing ever removes one. The `zips/` artifacts accumulate with them.
+
+That matters because [`publish.yml`](.github/workflows/publish.yml) copies the
+whole tree into `_site`, and **GitHub Pages refuses a published site over 1 GB**.
+Past that, `index.json` itself stops serving and every host boot falls to the
+§6.3 built-in fallback — the failure this registry exists to remove.
+
+Measured 2026-09-17: a full bake is **32 zips / ~21 MB** (~660 KiB mean).
+Resident zips are reused, so a no-op run adds nothing.
+
+So the bound is a **tripwire, not a policy**. `testing.yml` checks `zips/` before
+it commits:
+
+| `zips/` size | what happens |
+|---|---|
+| under 256 MiB | nothing |
+| 256 MiB or more | `::warning::` — prune soon |
+| 512 MiB or more | `::error::`, **the run fails before committing** |
+
+512 MiB is half of Pages' refusal point, and roughly 25× a full bake — an order
+of magnitude of headroom, on purpose. The workflow does not prune, because
+deciding a dated target is no longer deployable is a judgement, and a wrong one
+cannot be undone from a workflow.
+
+**To prune a retired dated target, an operator removes all three of:**
+
+1. its entry in `index.json`,
+2. its lock file, and
+3. its authoring entry.
+
+All three, together. Dropping only the index entry leaves the registry
+inconsistent — measured: `pin-release --check` then fails with *"index.json is
+out of date or has wrong digests"*, while removing all three passes with
+*"N release(s) consistent with index.json"*. Re-run `--check` after pruning, and
+never prune a target a deployment still pins by `name`+`sha256`.

@@ -73,6 +73,51 @@ jobs:
         # the bake is ON (the runner carries git+zip; resident zips are reused).
         run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
 
+      # ── The zips/ store has no automatic eviction, so it gets a tripwire ──
+      #
+      # `pin-release` keeps every historical lock in the index verbatim and
+      # `--check` FAILS if one is dropped (README, "Historical locks"), so this
+      # store is append-only by design: an hourly dated channel adds a lock
+      # whenever the composition changes, and nothing here ever removes one.
+      # `publish.yml` copies the whole tree into `_site`, and GitHub Pages
+      # refuses a published site over 1 GB — at which point `index.json` itself
+      # stops serving and every host boot falls to the §6.3 built-in fallback,
+      # which is the failure this registry exists to remove.
+      #
+      # Measured 2026-09-17: a full bake is 32 zips / ~21 MB (~660 KiB mean).
+      # Resident zips are reused, so a no-op run adds nothing.
+      #
+      # This step does NOT prune — pruning a lock is a judgement about what is
+      # still deployable, and a wrong one is unrecoverable from here. It fails
+      # the run while there is still an order of magnitude of headroom, so the
+      # operator prunes deliberately. See README "Retention" for the procedure.
+      - name: Fail before the zips store can threaten the Pages ceiling
+        run: |
+          set -euo pipefail
+          budget_mib=512   # hard stop: half of Pages' 1 GB refusal
+          warn_mib=256     # half the budget — visible long before the stop
+          # `du ... | cut || echo 0` does NOT work here: the pipeline's status is
+          # cut's, so a missing zips/ yields an EMPTY string, and `[ "" -ge N ]`
+          # is a syntax error that fails the step under `set -e`. zips/ does not
+          # exist until the first bake commits, i.e. on every run until then.
+          if [ -d zips ]; then
+            size_mib=$(du -sm zips | cut -f1)
+          else
+            size_mib=0
+          fi
+          echo "zips store: ${size_mib} MiB (warn ${warn_mib}, fail ${budget_mib}; Pages refuses 1024)"
+          if [ "$size_mib" -ge "$budget_mib" ]; then
+            echo "::error::zips/ is ${size_mib} MiB, at or over the ${budget_mib} MiB budget. \
+          Refusing to commit — a published site over 1 GB stops serving index.json entirely. \
+          Prune retired dated targets per README 'Retention' (index entry + lock + authoring, \
+          all three: dropping only the index entry fails pin-release --check), then re-run."
+            exit 1
+          fi
+          if [ "$size_mib" -ge "$warn_mib" ]; then
+            echo "::warning::zips/ is ${size_mib} MiB, past half the ${budget_mib} MiB budget. \
+          Prune retired dated targets per README 'Retention' before this reaches the stop."
+          fi
+
       - name: Commit the dated lock + channel repoint (skip a no-op run)
         env:
           # The MINTED token authenticates the push itself — the checkout above
@@ -93,4 +138,16 @@ jobs:
           # (a Bearer extraheader 401s at the git endpoints — probed live in
           # review round 2). This is the same form actions/checkout itself
           # writes for App tokens.
-          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$APP_TOKEN" | base64 -w0)" push origin main
+          # A push refused by the ruleset is the EXPECTED failure until R3-639
+          # adds this App to the bypass list, and a raw git error does not say
+          # so. Name it, then fail — never swallow it: the commit is made and
+          # unpushed either way, and a green run would claim a repoint that
+          # never reached the registry.
+          if ! git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$APP_TOKEN" | base64 -w0)" push origin main; then
+            echo "::error::push to main refused. If this is the ruleset (protected-branch) \
+          rejection, it is R3-639's owed prerequisite: the deploy App that minted APP_TOKEN \
+          must be on the branch ruleset's bypass list. That needs repo admin and cannot be \
+          done from this workflow. The dated lock is committed locally but NOT published; \
+          re-run after the bypass is granted."
+            exit 1
+          fi
