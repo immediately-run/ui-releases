@@ -1,6 +1,6 @@
 {
   "id": "base",
-  "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-16)",
+  "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-29)",
   "apps": {
     "page.landing": "github:immediately-run/example-blog@main",
     "panel.spaces": "github:immediately-run/space-manager@main",
@@ -20,7 +20,7 @@
     "task.edit-file": "github:immediately-run/edit-file@main",
     "task.pick-file": "github:immediately-run/file-selector@main",
     "task.open-bundle": "github:immediately-run/bundle-picker@main",
-    "task.open-project": "github:immediately-run/whiteboard@main",
+    "task.open-project": "github:immediately-run/lodestar@main",
     "task.m2-probe": "github:immediately-run/greeting-lib@m2-subapp",
     "task.open-workbook": "github:immediately-run/reckoner@main",
     "task.open-wiki": "github:immediately-run/grove@main",

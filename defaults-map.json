@@ -17,7 +17,7 @@
   "task.edit-file": "github:immediately-run/edit-file@main",
   "task.pick-file": "github:immediately-run/file-selector@main",
   "task.open-bundle": "github:immediately-run/bundle-picker@main",
-  "task.open-project": "github:immediately-run/whiteboard@main",
+  "task.open-project": "github:immediately-run/lodestar@main",
   "task.m2-probe": "github:immediately-run/greeting-lib@m2-subapp",
   "task.open-workbook": "github:immediately-run/reckoner@main",
   "task.open-wiki": "github:immediately-run/grove@main",

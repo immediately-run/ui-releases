@@ -1,82 +1,82 @@
 {
   "schemaVersion": 1,
   "id": "base",
-  "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-16)",
+  "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-29)",
   "apps": {
     "mainpane.contribute-diff": {
       "repo": "github:immediately-run/contribute-panel",
       "ref": "main",
-      "commit": "fcfdbcf290ff09dc2610f450dddc98d22756f67c"
+      "commit": "fbe1c4d3bcd8f07fbd41ce192fb0cc0f95683454"
     },
     "mainpane.tools": {
       "repo": "github:immediately-run/devtools",
       "ref": "main",
-      "commit": "03a93d1ad1f7430cb6b9557c16a113bca8785d94"
+      "commit": "b1c52e8faf1c8d290dfb79cb776ad73b3c2a4955"
     },
     "modal.contribute": {
       "repo": "github:immediately-run/contribute",
       "ref": "main",
-      "commit": "e4b1d9361c09a7e75cd5b32feb9de49ef3718649"
+      "commit": "0c96d205274a2bf84737b1fb6df067c7d845025e"
     },
     "page.commander": {
       "repo": "github:immediately-run/file-explorer",
       "ref": "main",
-      "commit": "e85802280f8957849e6ecd4a63e2f9d9974ce856"
+      "commit": "5cf7f8a9446a99d7d028b849301607aabfd645cb"
     },
     "page.home": {
       "repo": "github:immediately-run/home",
       "ref": "main",
-      "commit": "d23a9bbcd2d1beed1cd6565b6dea96c8f74a59df"
+      "commit": "cd7c63537697d5fd585e038064fed009da1490a9"
     },
     "page.landing": {
       "repo": "github:immediately-run/example-blog",
       "ref": "main",
-      "commit": "10734c6beb85bacb7a2176ad6454207aa708c621"
+      "commit": "38f6770f36027d0cb776a1ec63b3ab2605f1a311"
     },
     "page.spaces": {
       "repo": "github:immediately-run/space-manager",
       "ref": "main",
-      "commit": "c0197bbfc80ca28742c02d690aa8575665c4f1d6"
+      "commit": "d3c37eaffaa83923ac8e2d59de8d955f4fdaa2d4"
     },
     "panel.agent": {
       "repo": "github:immediately-run/agent-demo",
       "ref": "main",
-      "commit": "a7e2824257bb4544a5b0b9bef1516aaf47aa58b7"
+      "commit": "81b869e0e39d491b884077441a4cb39bc101619d"
     },
     "panel.contribute": {
       "repo": "github:immediately-run/contribute-panel",
       "ref": "main",
-      "commit": "fcfdbcf290ff09dc2610f450dddc98d22756f67c"
+      "commit": "fbe1c4d3bcd8f07fbd41ce192fb0cc0f95683454"
     },
     "panel.editor": {
       "repo": "github:immediately-run/editor",
       "ref": "main",
-      "commit": "ce706c426eb6143ec18e9768096668ebe5913b39"
+      "commit": "c053f814fedd2d2d52c16893aa1296d0a3558eaf"
     },
     "panel.files": {
       "repo": "github:immediately-run/file-explorer",
       "ref": "main",
-      "commit": "e85802280f8957849e6ecd4a63e2f9d9974ce856"
+      "commit": "5cf7f8a9446a99d7d028b849301607aabfd645cb"
     },
     "panel.spaces": {
       "repo": "github:immediately-run/space-manager",
       "ref": "main",
-      "commit": "c0197bbfc80ca28742c02d690aa8575665c4f1d6"
+      "commit": "d3c37eaffaa83923ac8e2d59de8d955f4fdaa2d4"
     },
     "panel.tools": {
       "repo": "github:immediately-run/devtools",
       "ref": "main",
-      "commit": "03a93d1ad1f7430cb6b9557c16a113bca8785d94"
+      "commit": "b1c52e8faf1c8d290dfb79cb776ad73b3c2a4955"
     },
     "stage.conversation": {
       "repo": "github:immediately-run/agent-demo",
       "ref": "main",
-      "commit": "a7e2824257bb4544a5b0b9bef1516aaf47aa58b7"
+      "commit": "81b869e0e39d491b884077441a4cb39bc101619d"
     },
     "task.edit-file": {
       "repo": "github:immediately-run/edit-file",
       "ref": "main",
-      "commit": "b572fe59bfa7dce4148c61afe8e5526331313226"
+      "commit": "5432ac6eb990cd5a9eee625b0c1213bc6d1cddd6"
     },
     "task.m2-probe": {
       "repo": "github:immediately-run/greeting-lib",
@@ -86,37 +86,37 @@
     "task.open-bundle": {
       "repo": "github:immediately-run/bundle-picker",
       "ref": "main",
-      "commit": "806dad6660bfb7779c2b69f091f9412cf6ffc2ee"
+      "commit": "de31dd5dbb06bade9544d4d8ebb5b25be77b896f"
     },
     "task.open-project": {
-      "repo": "github:immediately-run/whiteboard",
+      "repo": "github:immediately-run/lodestar",
       "ref": "main",
-      "commit": "125c618bdc2b8a2584685de74a6537ad2b5fec7c"
+      "commit": "26fec7ed08a36079e69d4b0ac6688c2dcb0d514b"
     },
     "task.open-wiki": {
       "repo": "github:immediately-run/grove",
       "ref": "main",
-      "commit": "7cbd444e4778f7e9c802f70a800799c2c22007ae"
+      "commit": "394330d1cbc5872d8b355e89704fe444b6eb6380"
     },
     "task.open-workbook": {
       "repo": "github:immediately-run/reckoner",
       "ref": "main",
-      "commit": "b3341762a45a87eaf2b27c727d793a11944c936c"
+      "commit": "4330bf40044e158a7b64f01b04e26337dffdb2ed"
     },
     "task.pick-color": {
       "repo": "github:immediately-run/color-picker",
       "ref": "main",
-      "commit": "05440d05ebdebfe17e6e06a5b64631af74ed785c"
+      "commit": "41d4574677771f3e4a86e57f10bcf503972a5519"
     },
     "task.pick-file": {
       "repo": "github:immediately-run/file-selector",
       "ref": "main",
-      "commit": "438167901c811a849d7a098c52a5ff400e976921"
+      "commit": "1cf5d00360a1ad456eec4ae8a2696b3acc93ed96"
     },
     "widget.theme": {
       "repo": "github:immediately-run/theme-toggle",
       "ref": "main",
-      "commit": "debdecae2dc0f7efcd904687c5d36e5de7deb87e"
+      "commit": "5b3eb7902b7be2ab42da50554a3973da69caf8ab"
     }
   }
 }

@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "releases": {
     "base": {
-      "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-16)",
+      "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-29)",
       "url": "base.lock.json",
-      "sha256": "1d907db363679669f8025945db492535ed0221d80ee97514e53b48414cecb7a9"
+      "sha256": "f158656f6fecb0544bb18c94b7c1354dfc49293031ed4373f065d90187f88a26"
     },
     "pick-gate2": {
       "label": "Pick-color variant (Gate-2)",
