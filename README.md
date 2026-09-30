@@ -56,7 +56,7 @@ to Pages on push.
 
 **Immutable by name.** A published name is frozen — re-pinning it to *different*
 content is refused with or without `--republish` (the flag is the vestigial
-byte-identical repair hatch; since 2026-09-30 / cli 0.9.2 it lifts nothing — R3-823).
+byte-identical repair hatch; since 2026-09-30 / cli 0.9.3 it lifts nothing — R3-823).
 Ship a new composition under a new name (`monaco-2026-07`).
 
 ## The defaults-derived base map (2026-09-16)
