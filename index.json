@@ -1,15 +1,18 @@
 {
   "schemaVersion": 1,
   "releases": {
-    "base": {
+    "base-2026-09-30-942cbf6e": {
       "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-29)",
-      "url": "base.lock.json",
-      "sha256": "f158656f6fecb0544bb18c94b7c1354dfc49293031ed4373f065d90187f88a26"
+      "url": "base-2026-09-30-942cbf6e.lock.json",
+      "sha256": "942cbf6e6e3ce7648641db8e1d2d334cf541f3cfd1947ba3738c28a5c7f73caa"
     },
     "pick-gate2": {
       "label": "Pick-color variant (Gate-2)",
       "url": "pick-gate2.lock.json",
       "sha256": "5cd5402794fc9da6b96b886945c6f498be1c107d6053fe2f60fa05ba054fa4d4"
     }
+  },
+  "channels": {
+    "base": "base-2026-09-30-942cbf6e"
   }
 }

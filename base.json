@@ -25,5 +25,6 @@
     "task.open-workbook": "github:immediately-run/reckoner@main",
     "task.open-wiki": "github:immediately-run/grove@main",
     "stage.conversation": "github:immediately-run/agent-demo@main"
-  }
+  },
+  "channel": true
 }
