@@ -22,11 +22,11 @@
 name: Publish the testing channel
 
 on:
-  schedule:
-    # Hourly at :23. The channel's freshness bound is this cadence plus the
-    # gh-pages CDN TTL (~10 min); a no-op run (unchanged composition, same day)
-    # resolves to the existing lock and exits without committing.
-    - cron: '23 * * * *'
+  # Dispatch only (the owner, 2026-10-05). No deployment selects `testing`
+  # yet, so a schedule only grew the zips store and queued Pages approvals.
+  # Add a schedule, or a trigger from app merges, when one does. A no-op run
+  # (unchanged composition, same day) resolves to the existing lock and exits
+  # without committing.
   workflow_dispatch:
 
 permissions:
@@ -77,7 +77,7 @@ jobs:
       #
       # `pin-release` keeps every historical lock in the index verbatim and
       # `--check` FAILS if one is dropped (README, "Historical locks"), so this
-      # store is append-only by design: an hourly dated channel adds a lock
+      # store is append-only by design: each dated channel run adds a lock
       # whenever the composition changes, and nothing here ever removes one.
       # `publish.yml` copies the whole tree into `_site`, and GitHub Pages
       # refuses a published site over 1 GB — at which point `index.json` itself
