@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "id": "testing",
+  "label": "Latest of origin/main (channel template)",
+  "apps": {
+    "mainpane.contribute-diff": {
+      "repo": "github:immediately-run/contribute-panel",
+      "ref": "main",
+      "commit": "4aa2f1bb963fbd1a5a575f6417d72b9e697e091e"
+    },
+    "mainpane.tools": {
+      "repo": "github:immediately-run/devtools",
+      "ref": "main",
+      "commit": "9d097179fbbffaa32392b7fbf43188a074716aa6"
+    },
+    "modal.contribute": {
+      "repo": "github:immediately-run/contribute",
+      "ref": "main",
+      "commit": "e12ec8997a9d8b6717accc1183b456cd37d7b494"
+    },
+    "page.commander": {
+      "repo": "github:immediately-run/file-explorer",
+      "ref": "main",
+      "commit": "38cd6d6b413ec6a95f4f4556cf8fa862ed61c836"
+    },
+    "page.home": {
+      "repo": "github:immediately-run/home",
+      "ref": "main",
+      "commit": "9be28cc445cefdfc35e3a8c7a4a92e10b11af437"
+    },
+    "page.landing": {
+      "repo": "github:immediately-run/example-blog",
+      "ref": "main",
+      "commit": "d8f9b23ee5172211e289c8cfdd08ba8b84733ed9"
+    },
+    "page.spaces": {
+      "repo": "github:immediately-run/space-manager",
+      "ref": "main",
+      "commit": "6c67e6a647670e82bedb02a0ee5c94c0d03ff27e"
+    },
+    "panel.agent": {
+      "repo": "github:immediately-run/agent-demo",
+      "ref": "main",
+      "commit": "9e4447ac11fc12bbfac3e91d91ee8d8b94572657"
+    },
+    "panel.contribute": {
+      "repo": "github:immediately-run/contribute-panel",
+      "ref": "main",
+      "commit": "4aa2f1bb963fbd1a5a575f6417d72b9e697e091e"
+    },
+    "panel.editor": {
+      "repo": "github:immediately-run/editor",
+      "ref": "main",
+      "commit": "94d4c7c2509e68219820e98c600e13f78a6d965b"
+    },
+    "panel.files": {
+      "repo": "github:immediately-run/file-explorer",
+      "ref": "main",
+      "commit": "38cd6d6b413ec6a95f4f4556cf8fa862ed61c836"
+    },
+    "panel.spaces": {
+      "repo": "github:immediately-run/space-manager",
+      "ref": "main",
+      "commit": "6c67e6a647670e82bedb02a0ee5c94c0d03ff27e"
+    },
+    "panel.tools": {
+      "repo": "github:immediately-run/devtools",
+      "ref": "main",
+      "commit": "9d097179fbbffaa32392b7fbf43188a074716aa6"
+    },
+    "stage.conversation": {
+      "repo": "github:immediately-run/agent-demo",
+      "ref": "main",
+      "commit": "9e4447ac11fc12bbfac3e91d91ee8d8b94572657"
+    },
+    "task.edit-file": {
+      "repo": "github:immediately-run/edit-file",
+      "ref": "main",
+      "commit": "ecfaad43d1dd8fb4708e30054d0bc5ca6ad432b7"
+    },
+    "task.m2-probe": {
+      "repo": "github:immediately-run/greeting-lib",
+      "ref": "m2-subapp",
+      "commit": "4be0503929fbab0342bb6e60b6e6958d2db9d082"
+    },
+    "task.open-bundle": {
+      "repo": "github:immediately-run/bundle-picker",
+      "ref": "main",
+      "commit": "f0dae33f5a271c11e09a4ac13a270d251f343a9a"
+    },
+    "task.open-project": {
+      "repo": "github:immediately-run/lodestar",
+      "ref": "main",
+      "commit": "baea8fe12b42e9177937e94db1b975135a4304f5"
+    },
+    "task.open-wiki": {
+      "repo": "github:immediately-run/grove",
+      "ref": "main",
+      "commit": "1218c38151747581c75ced2367fe29c37f817497"
+    },
+    "task.open-workbook": {
+      "repo": "github:immediately-run/reckoner",
+      "ref": "main",
+      "commit": "f3ed38ddd71b93dc3c3382753aa50cf65c294120"
+    },
+    "task.pick-color": {
+      "repo": "github:immediately-run/color-picker",
+      "ref": "main",
+      "commit": "70f7e98cf690b8f94547832b14ed16efc6caeb70"
+    },
+    "task.pick-file": {
+      "repo": "github:immediately-run/file-selector",
+      "ref": "main",
+      "commit": "0db648985ed7971659b4ee1d590fd530678de99a"
+    },
+    "widget.theme": {
+      "repo": "github:immediately-run/theme-toggle",
+      "ref": "main",
+      "commit": "a0409778bb17288da2d1c5e1679de43d60508727"
+    }
+  }
+}

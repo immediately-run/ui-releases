@@ -10,6 +10,14 @@
       "label": "Pick-color variant (Gate-2)",
       "url": "pick-gate2.lock.json",
       "sha256": "5cd5402794fc9da6b96b886945c6f498be1c107d6053fe2f60fa05ba054fa4d4"
+    },
+    "testing-2026-10-05-ee295096": {
+      "label": "Latest of origin/main (channel template)",
+      "url": "testing-2026-10-05-ee295096.lock.json",
+      "sha256": "ee295096a1d053486a1aa750f10aa0536713cdf633e1085a1cfc31f4106f924c"
     }
+  },
+  "channels": {
+    "testing": "testing-2026-10-05-ee295096"
   }
 }
