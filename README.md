@@ -72,7 +72,7 @@ registry change, commit both files, and republish `base`
 
 `testing.json` is the channel *template*: `extends base`, no deltas — the base
 authoring map at `@main`, i.e. **the latest of origin/main**. The
-[`testing.yml`](.github/workflows/testing.yml) workflow (hourly + dispatch)
+[`testing.yml`](.github/workflows/testing.yml) workflow (dispatch only until a deployment selects the channel)
 resolves it into a **new dated immutable lock** (`testing-YYYY-MM-DD-<sha8>`),
 repoints `channels.testing` in `index.json` (the only mutable write in this
 registry), bakes the `zips/<ns>/<repo>/<sha>.zip` artifacts (§3.4 — the app
@@ -89,7 +89,7 @@ committed registry: `pin-release` keeps them in the index verbatim, and
 
 **Nothing here evicts anything automatically, by design.** The sentence above is
 why: `pin-release` keeps every historical lock verbatim and `--check` fails if
-one is dropped, so an hourly dated channel adds a lock whenever the composition
+one is dropped, so each dated channel run adds a lock whenever the composition
 changes and nothing ever removes one. The `zips/` artifacts accumulate with them.
 
 That matters because [`publish.yml`](.github/workflows/publish.yml) copies the
