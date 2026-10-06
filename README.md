@@ -37,7 +37,8 @@ A deployment opts in via its config:
     ```
   - `id` MUST equal the filename (without `.json`).
 - **`<name>.lock.json`** — *generated, committed*: every region resolved to a
-  commit. Deterministic, so its sha-256 is stable.
+  commit, or, for an `"unpinned": true` template (`testing`), every region
+  kept at its ref with no commit. Deterministic, so its sha-256 is stable.
 - **`index.json`** — *generated, committed*: each release's lock url + sha-256
   (the integrity anchor the host verifies against).
 
@@ -68,18 +69,31 @@ relative to `defaults-map.json` — re-run the export after every site-main
 registry change, commit both files, and republish `base`
 (`--only base --republish`, deliberate).
 
-## The `testing` channel (2026-09-16)
+## The `testing` channel (2026-09-16; unpinned since R3-658, 2026-10-06)
 
-`testing.json` is the channel *template*: `extends base`, no deltas — the base
-authoring map at `@main`, i.e. **the latest of origin/main**. The
-[`testing.yml`](.github/workflows/testing.yml) workflow (dispatch only until a deployment selects the channel)
-resolves it into a **new dated immutable lock** (`testing-YYYY-MM-DD-<sha8>`),
-repoints `channels.testing` in `index.json` (the only mutable write in this
-registry), bakes the `zips/<ns>/<repo>/<sha>.zip` artifacts (§3.4 — the app
-repos' own Pages evict older shas), and commits to main; the push triggers
-`publish.yml`, which validates and serves Pages. A production deployment may
-never name a channel — it pins a concrete `name`+`sha256`; the `testing`
-channel is for dev/preview deployments and user selection.
+There are two channels. `stable` (and `base`) stay pinned and digest-verified:
+that is what production loads. `testing` is the bleeding edge.
+
+`testing.json` is the channel *template*: `extends base`, no deltas, and
+`"unpinned": true`. The [`testing.yml`](.github/workflows/testing.yml)
+workflow publishes it as a **new dated immutable lock**
+(`testing-YYYY-MM-DD-<sha8>`) that names each app's **ref** and no commit,
+and repoints `channels.testing` in `index.json` (the only mutable write in this
+registry). Nothing is resolved to a commit and no zip is baked for it: every
+region follows the head of its branch on every boot. The run's bake step covers
+only the pinned locks already in the index: it reuses their resident zips and
+bakes any that are absent. The
+workflow then commits to main, and the push triggers `publish.yml`, which
+validates and serves Pages.
+
+The lock changes only when the authoring does, so `testing.yml` runs on a push
+touching `testing.json` or `base.json`, or on dispatch. `pin-release --check`
+lets only the `testing` channel target an unpinned lock (UI_RELEASES_SPEC §3.2).
+A host applies an unpinned lock only where its deployment config allows it
+(staging, `local.immediately.run`, `localhost`), never in production (§4.1); a
+production deployment pins a concrete `name`+`sha256` and never names a
+channel. A reproducible pinned snapshot is still one `pin-release --dated <id>`
+away.
 
 Historical locks (dated targets whose authoring is gone) are part of the
 committed registry: `pin-release` keeps them in the index verbatim, and

@@ -1,12 +1,21 @@
 # Publishes the `testing` CHANNEL (UI_RELEASES_SPEC §4.4 — the moving pointer
 # to "latest of origin/main").
 #
-# Every run resolves the testing template (testing.json — the base authoring
-# map at @main) into a NEW dated immutable lock (`testing-YYYY-MM-DD-<sha8>`,
+# R3-658 (the owner, 2026-10-06): testing.json is "unpinned": true, so the lock
+# this writes names each app's REF and no commit — every region follows the
+# head of its branch on every boot, and no zip is baked for it. The lock only
+# changes when the authoring does, so the workflow runs on a push touching
+# testing.json or base.json (and on dispatch), not on a schedule. A host
+# applies the lock only where its deployment config allows unpinned locks —
+# never in production (§4.1).
+#
+# Every run publishes the testing template (testing.json — the base authoring
+# map, unpinned) as a NEW dated immutable lock (`testing-YYYY-MM-DD-<sha8>`,
 # deterministic: an unchanged composition + day reuses the existing lock),
-# repoints `channels.testing` in index.json (the ONLY mutable write), bakes the
-# §3.4 registry zips for every pin the index carries (resident zips reused),
-# and commits to main. The commit's push triggers publish.yml, which validates
+# repoints `channels.testing` in index.json (the ONLY mutable write), runs the
+# §3.4 bake over the PINNED locks the index carries (resident zips reused; the
+# unpinned target has no commits, so nothing is baked for it), and commits to
+# main. The commit's push triggers publish.yml, which validates
 # the registry (`pin-release --check`, networkless) and serves GitHub Pages.
 #
 # `--only testing`: this run can NEVER republish base — every other lock
@@ -22,12 +31,17 @@
 name: Publish the testing channel
 
 on:
-  # Dispatch only (the owner, 2026-10-05). No deployment selects `testing`
-  # yet, so a schedule only grew the zips store and queued Pages approvals.
-  # Add a schedule, or a trigger from app merges, when one does. A no-op run
-  # (unchanged composition, same day) resolves to the existing lock and exits
-  # without committing.
+  # No schedule (the owner, 2026-10-05: it only grew the zips store and queued
+  # Pages approvals), and since R3-658 (2026-10-06) none is needed: the
+  # unpinned lock follows each branch head by itself. A no-op run (unchanged composition, same day)
+  # resolves to the existing lock and exits without committing.
   workflow_dispatch:
+  # R3-658: the unpinned lock's bytes depend only on the authoring, so a push
+  # that changes it is the one event that needs a new lock. The bot's own
+  # commit (index + lock) touches neither path, so it cannot retrigger this.
+  push:
+    branches: [main]
+    paths: [testing.json, base.json]
 
 permissions:
   contents: write
@@ -67,11 +81,14 @@ jobs:
         with:
           node-version: 22
 
-      - name: Resolve the testing channel's fresh target + bake its zips
+      - name: Publish the testing channel's unpinned target
         # --dated publishes under the dated immutable name; --channel
-        # testing=@dated repoints the channel at it (the only mutable write);
-        # the bake is ON (the runner carries git+zip; resident zips are reused).
-        run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
+        # testing=@dated repoints the channel at it (the only mutable write).
+        # No ref is resolved: the lock keeps each region's ref. The bake stays
+        # on for the pinned locks in the index: it reuses their resident zips
+        # and bakes any that are absent (the runner carries git+zip). The
+        # unpinned target has no commits, so nothing is baked for it.
+        run: npx -y @immediately-run/cli@0.10.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
 
       # ── The zips/ store has no automatic eviction, so it gets a tripwire ──
       #
@@ -129,11 +146,11 @@ jobs:
           git config user.name "immediately-run-worker"
           git config user.email "immediately-run-worker@users.noreply.github.com"
           if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
-            echo "testing channel: no change — the resolved composition already has today's lock."
+            echo "testing channel: no change — the composition already has today's lock."
             exit 0
           fi
           git add -A
-          git commit -m "testing channel: repoint to the resolved latest of origin/main (workflow run ${{ github.run_id }})"
+          git commit -m "testing channel: repoint to the unpinned target for the current authoring (workflow run ${{ github.run_id }})"
           # Git-over-HTTPS accepts the App token ONLY as Basic x-access-token
           # (a Bearer extraheader 401s at the git endpoints — probed live in
           # review round 2). This is the same form actions/checkout itself

@@ -49,7 +49,7 @@ jobs:
         # coverage assertion against the committed defaults-map.json — the
         # 0.3.0 check FAILS on an index that carries any of those. Bump in
         # lockstep with testing.yml's publish pin.
-        run: npx -y @immediately-run/cli@0.9.0 pin-release --check --dir .
+        run: npx -y @immediately-run/cli@0.10.0 pin-release --check --dir .
 
       - name: Assemble Pages artifact
         run: |
