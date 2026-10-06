@@ -81,6 +81,18 @@ repos' own Pages evict older shas), and commits to main; the push triggers
 never name a channel — it pins a concrete `name`+`sha256`; the `testing`
 channel is for dev/preview deployments and user selection.
 
+**Two channels (R3-658, 2026-10-06).** `stable` (and `base`) stay pinned and
+digest-verified — what production loads. `testing` is the bleeding edge:
+`testing.json` is `"unpinned": true`, so its lock names each app's **ref** and
+no commit, every region follows the head of its branch on every boot, and no
+zip is baked for it. `pin-release --check` refuses a `base` or `stable` channel
+that targets an unpinned lock. A host applies an unpinned lock only where its
+deployment config allows it (staging, `local.immediately.run`, `localhost`) —
+never in production (UI_RELEASES_SPEC §4.1). The lock changes only when the
+authoring does, so `testing.yml` runs on a push touching `testing.json` or
+`base.json`, or on dispatch. A reproducible pinned snapshot is still one
+`pin-release --dated <id>` away.
+
 Historical locks (dated targets whose authoring is gone) are part of the
 committed registry: `pin-release` keeps them in the index verbatim, and
 `--check` fails if one is dropped.

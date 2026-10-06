@@ -1,7 +1,8 @@
 {
   "id": "testing",
-  "label": "Latest of origin/main (channel template)",
+  "label": "Head of each app's main branch, unpinned (channel template)",
   "extends": "base",
   "channel": true,
+  "unpinned": true,
   "apps": {}
 }

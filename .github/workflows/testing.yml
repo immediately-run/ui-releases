@@ -1,6 +1,14 @@
 # Publishes the `testing` CHANNEL (UI_RELEASES_SPEC §4.4 — the moving pointer
 # to "latest of origin/main").
 #
+# R3-658 (the owner, 2026-10-06): testing.json is "unpinned": true, so the lock
+# this writes names each app's REF and no commit — every region follows the
+# head of its branch on every boot, and no zip is baked for it. The lock only
+# changes when the authoring does, so the workflow runs on a push touching
+# testing.json or base.json (and on dispatch), not on a schedule. A host
+# applies the lock only where its deployment config allows unpinned locks —
+# never in production (§4.1).
+#
 # Every run resolves the testing template (testing.json — the base authoring
 # map at @main) into a NEW dated immutable lock (`testing-YYYY-MM-DD-<sha8>`,
 # deterministic: an unchanged composition + day reuses the existing lock),
@@ -28,6 +36,10 @@ on:
   # (unchanged composition, same day) resolves to the existing lock and exits
   # without committing.
   workflow_dispatch:
+  # R3-658: the unpinned lock's bytes depend only on the authoring.
+  push:
+    branches: [main]
+    paths: [testing.json, base.json]
 
 permissions:
   contents: write
@@ -71,7 +83,7 @@ jobs:
         # --dated publishes under the dated immutable name; --channel
         # testing=@dated repoints the channel at it (the only mutable write);
         # the bake is ON (the runner carries git+zip; resident zips are reused).
-        run: npx -y @immediately-run/cli@0.9.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
+        run: npx -y @immediately-run/cli@0.10.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
 
       # ── The zips/ store has no automatic eviction, so it gets a tripwire ──
       #
