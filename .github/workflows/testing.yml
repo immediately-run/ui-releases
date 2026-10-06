@@ -85,8 +85,9 @@ jobs:
         # --dated publishes under the dated immutable name; --channel
         # testing=@dated repoints the channel at it (the only mutable write).
         # No ref is resolved: the lock keeps each region's ref. The bake stays
-        # on, but only reuses or re-verifies the zips of the pinned locks in
-        # the index (the runner carries git+zip); the unpinned target has none.
+        # on for the pinned locks in the index: it reuses their resident zips
+        # and bakes any that are absent (the runner carries git+zip). The
+        # unpinned target has no commits, so nothing is baked for it.
         run: npx -y @immediately-run/cli@0.10.0 pin-release --dir . --only testing --dated testing --channel testing=@dated
 
       # ── The zips/ store has no automatic eviction, so it gets a tripwire ──

@@ -80,8 +80,9 @@ workflow publishes it as a **new dated immutable lock**
 (`testing-YYYY-MM-DD-<sha8>`) that names each app's **ref** and no commit,
 and repoints `channels.testing` in `index.json` (the only mutable write in this
 registry). Nothing is resolved to a commit and no zip is baked for it: every
-region follows the head of its branch on every boot. The run's bake step only
-reuses or re-verifies the zips of the pinned locks already in the index. The
+region follows the head of its branch on every boot. The run's bake step covers
+only the pinned locks already in the index: it reuses their resident zips and
+bakes any that are absent. The
 workflow then commits to main, and the push triggers `publish.yml`, which
 validates and serves Pages.
 
