@@ -15,9 +15,14 @@
       "label": "Latest of origin/main (channel template)",
       "url": "testing-2026-10-05-ee295096.lock.json",
       "sha256": "ee295096a1d053486a1aa750f10aa0536713cdf633e1085a1cfc31f4106f924c"
+    },
+    "testing-2026-10-06-d0d974c6": {
+      "label": "Head of each app's main branch, unpinned (channel template)",
+      "url": "testing-2026-10-06-d0d974c6.lock.json",
+      "sha256": "d0d974c6c86028031588ffa85340ea3840b8fe2acd23ad1d831c46247b3a1b24"
     }
   },
   "channels": {
-    "testing": "testing-2026-10-05-ee295096"
+    "testing": "testing-2026-10-06-d0d974c6"
   }
 }

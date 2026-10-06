@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "id": "testing",
+  "label": "Head of each app's main branch, unpinned (channel template)",
+  "unpinned": true,
+  "apps": {
+    "mainpane.contribute-diff": {
+      "repo": "github:immediately-run/contribute-panel",
+      "ref": "main"
+    },
+    "mainpane.tools": {
+      "repo": "github:immediately-run/devtools",
+      "ref": "main"
+    },
+    "modal.contribute": {
+      "repo": "github:immediately-run/contribute",
+      "ref": "main"
+    },
+    "page.commander": {
+      "repo": "github:immediately-run/file-explorer",
+      "ref": "main"
+    },
+    "page.home": {
+      "repo": "github:immediately-run/home",
+      "ref": "main"
+    },
+    "page.landing": {
+      "repo": "github:immediately-run/example-blog",
+      "ref": "main"
+    },
+    "page.spaces": {
+      "repo": "github:immediately-run/space-manager",
+      "ref": "main"
+    },
+    "panel.agent": {
+      "repo": "github:immediately-run/agent-demo",
+      "ref": "main"
+    },
+    "panel.contribute": {
+      "repo": "github:immediately-run/contribute-panel",
+      "ref": "main"
+    },
+    "panel.editor": {
+      "repo": "github:immediately-run/editor",
+      "ref": "main"
+    },
+    "panel.files": {
+      "repo": "github:immediately-run/file-explorer",
+      "ref": "main"
+    },
+    "panel.spaces": {
+      "repo": "github:immediately-run/space-manager",
+      "ref": "main"
+    },
+    "panel.tools": {
+      "repo": "github:immediately-run/devtools",
+      "ref": "main"
+    },
+    "stage.conversation": {
+      "repo": "github:immediately-run/agent-demo",
+      "ref": "main"
+    },
+    "task.edit-file": {
+      "repo": "github:immediately-run/edit-file",
+      "ref": "main"
+    },
+    "task.m2-probe": {
+      "repo": "github:immediately-run/greeting-lib",
+      "ref": "m2-subapp"
+    },
+    "task.open-bundle": {
+      "repo": "github:immediately-run/bundle-picker",
+      "ref": "main"
+    },
+    "task.open-project": {
+      "repo": "github:immediately-run/lodestar",
+      "ref": "main"
+    },
+    "task.open-wiki": {
+      "repo": "github:immediately-run/grove",
+      "ref": "main"
+    },
+    "task.open-workbook": {
+      "repo": "github:immediately-run/reckoner",
+      "ref": "main"
+    },
+    "task.pick-color": {
+      "repo": "github:immediately-run/color-picker",
+      "ref": "main"
+    },
+    "task.pick-file": {
+      "repo": "github:immediately-run/file-selector",
+      "ref": "main"
+    },
+    "widget.theme": {
+      "repo": "github:immediately-run/theme-toggle",
+      "ref": "main"
+    }
+  }
+}
