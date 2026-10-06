@@ -30,13 +30,14 @@
 name: Publish the testing channel
 
 on:
-  # Dispatch only (the owner, 2026-10-05). No deployment selects `testing`
-  # yet, so a schedule only grew the zips store and queued Pages approvals.
-  # Add a schedule, or a trigger from app merges, when one does. A no-op run
-  # (unchanged composition, same day) resolves to the existing lock and exits
-  # without committing.
+  # No schedule and no trigger from app merges (the owner, 2026-10-05): the
+  # unpinned lock follows each branch head by itself, so a schedule would only
+  # queue Pages approvals. A no-op run (unchanged composition, same day)
+  # resolves to the existing lock and exits without committing.
   workflow_dispatch:
-  # R3-658: the unpinned lock's bytes depend only on the authoring.
+  # R3-658: the unpinned lock's bytes depend only on the authoring, so a push
+  # that changes it is the one event that needs a new lock. The bot's own
+  # commit (index + lock) touches neither path, so it cannot retrigger this.
   push:
     branches: [main]
     paths: [testing.json, base.json]
