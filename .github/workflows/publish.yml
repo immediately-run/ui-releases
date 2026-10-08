@@ -47,7 +47,10 @@ jobs:
         # 0.9.0: the --check gained the §4.4 channel-map validation, the
         # historical-lock (authoring-less) index comparison, and the §3.1
         # coverage assertion against the committed defaults-map.json — the
-        # 0.3.0 check FAILS on an index that carries any of those. Bump in
+        # 0.3.0 check FAILS on an index that carries any of those. 0.9.4 is
+        # the floor since R3-823 (2026-10-08): it resolves base coverage
+        # through channels.base; below it the retired plain `base` name
+        # fails the coverage assertion. Bump in
         # lockstep with testing.yml's publish pin.
         run: npx -y @immediately-run/cli@0.10.0 pin-release --check --dir .
 
