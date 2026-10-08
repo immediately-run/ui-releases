@@ -76,8 +76,9 @@ one mutable pointer, and every dated base lock stays in the index verbatim).
 
 ## The `testing` channel (2026-09-16; unpinned since R3-658, 2026-10-06)
 
-There are two channels. `stable` (and `base`) stay pinned and digest-verified:
-that is what production loads. `testing` is the bleeding edge.
+There are two channels: `base` and `testing`. `base`'s channel target is a
+dated immutable lock — pinned and digest-verified: that is what production
+loads. `testing` is the bleeding edge.
 
 `testing.json` is the channel *template*: `extends base`, no deltas, and
 `"unpinned": true`. The [`testing.yml`](.github/workflows/testing.yml)
