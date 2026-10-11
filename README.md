@@ -23,7 +23,9 @@ https://immediately-run.github.io/ui-releases/<name>.lock.json  # one per releas
 ```
 
 A deployment opts in via its config:
-`"release": { "name": "base" }` (the registry URL defaults to the above).
+`"release": { "name": "base" }` resolves through the `channels.base` pointer to the current dated
+base lock (2026-10-08, R3-823 — `base` is a channel, never a mutable release name; a deployment
+that pins `name`+`sha256` names the dated lock directly).
 
 ## Files
 
@@ -53,9 +55,10 @@ Resolves each `@ref` to a commit (`git ls-remote`), writes the lock(s), rebuilds
 `publish.yml` workflow validates (`pin-release --check`, networkless) and deploys
 to Pages on push.
 
-**Immutable by name.** Re-pinning an existing name to *different* content is
-refused — a published name is frozen. Ship a new composition under a new name
-(`monaco-2026-07`); to correct a mistake, pass `--republish`.
+**Immutable by name.** A published name is frozen — re-pinning it to *different*
+content is refused with or without `--republish` (the flag is the vestigial
+byte-identical repair hatch; since 2026-09-30 / cli 0.9.4 it lifts nothing — R3-823).
+Ship a new composition under a new name (`monaco-2026-07`).
 
 ## The defaults-derived base map (2026-09-16)
 
@@ -66,13 +69,16 @@ appears; an omitted region would silently re-couple to the moving `@main`
 (`UI_RELEASES_SPEC` §6.3 fallback), which is the opposite of a collection.
 `pin-release --check` fails at publish naming any region the base lock omits
 relative to `defaults-map.json` — re-run the export after every site-main
-registry change, commit both files, and republish `base`
-(`--only base --republish`, deliberate).
+registry change, commit both files, and republish `base` as a NEW DATED LOCK
+(`--only base --dated base --channel base=@dated`, deliberate — `base` is a
+channel template: the plain name is retired (R3-823), `channels.base` is the
+one mutable pointer, and every dated base lock stays in the index verbatim).
 
 ## The `testing` channel (2026-09-16; unpinned since R3-658, 2026-10-06)
 
-There are two channels. `stable` (and `base`) stay pinned and digest-verified:
-that is what production loads. `testing` is the bleeding edge.
+There are two channels: `base` and `testing`. `base`'s channel target is a
+dated immutable lock — pinned and digest-verified: that is what production
+loads. `testing` is the bleeding edge.
 
 `testing.json` is the channel *template*: `extends base`, no deltas, and
 `"unpinned": true`. The [`testing.yml`](.github/workflows/testing.yml)

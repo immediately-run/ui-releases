@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "releases": {
-    "base": {
+    "base-2026-10-08-f158656f": {
       "label": "Default composition (derived from site-main BUILD_DEFAULTS 2026-09-29)",
-      "url": "base.lock.json",
+      "url": "base-2026-10-08-f158656f.lock.json",
       "sha256": "f158656f6fecb0544bb18c94b7c1354dfc49293031ed4373f065d90187f88a26"
     },
     "pick-gate2": {
@@ -23,6 +23,7 @@
     }
   },
   "channels": {
+    "base": "base-2026-10-08-f158656f",
     "testing": "testing-2026-10-06-d0d974c6"
   }
 }
