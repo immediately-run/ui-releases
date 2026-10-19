@@ -101,12 +101,14 @@ jobs:
       # stops serving and every host boot falls to the §6.3 built-in fallback,
       # which is the failure this registry exists to remove.
       #
-      # Measured 2026-09-17: a full bake is 32 zips / ~21 MB (~660 KiB mean).
+      # Measured 2026-10-19: a full bake is 43 zips / 65 MiB (~1.5 MiB mean)
+      # after R3-824's bundled-package re-bake (each zip carries
+      # `.immediately.run/packages/`, so about 2.7× the thin zips' size).
       # Resident zips are reused, so a no-op run adds nothing.
       #
       # This step does NOT prune — pruning a lock is a judgement about what is
       # still deployable, and a wrong one is unrecoverable from here. It fails
-      # the run while there is still an order of magnitude of headroom, so the
+      # the run while there is still headroom (about 8× a full bake), so the
       # operator prunes deliberately. See README "Retention" for the procedure.
       - name: Fail before the zips store can threaten the Pages ceiling
         run: |
