@@ -117,8 +117,10 @@ whole tree into `_site`, and **GitHub Pages refuses a published site over 1 GB**
 Past that, `index.json` itself stops serving and every host boot falls to the
 §6.3 built-in fallback — the failure this registry exists to remove.
 
-Measured 2026-09-17: a full bake is **32 zips / ~21 MB** (~660 KiB mean).
-Resident zips are reused, so a no-op run adds nothing.
+Measured 2026-10-19: a full bake is **43 zips / 65 MiB** (~1.5 MiB mean) after
+R3-824's bundled-package re-bake — each zip now carries
+`.immediately.run/packages/`, so they are about 2.7× larger than the thin ones
+the registry shipped with. Resident zips are reused, so a no-op run adds nothing.
 
 So the bound is a **tripwire, not a policy**. `testing.yml` checks `zips/` before
 it commits:
@@ -129,8 +131,8 @@ it commits:
 | 256 MiB or more | `::warning::` — prune soon |
 | 512 MiB or more | `::error::`, **the run fails before committing** |
 
-512 MiB is half of Pages' refusal point, and roughly 25× a full bake — an order
-of magnitude of headroom, on purpose. The workflow does not prune, because
+512 MiB is half of Pages' refusal point, and roughly 8× a full bake — deliberate
+headroom, though less of it since the bundled-package re-bake. The workflow does not prune, because
 deciding a dated target is no longer deployable is a judgement, and a wrong one
 cannot be undone from a workflow.
 
